@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D DNA Spiral</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            overflow: hidden;
+        }
+        
+        #prompt {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: white;
+            color: black;
+            padding: 15px;
+            font-family: monospace;
+            font-size: 12px;
+            max-width: 300px;
+            z-index: 1000;
+            border-radius: 5px;
+        }
+        
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div id="prompt">
+        create single web page
+        draw 3d dna spiral, rotate automatically
+        each cell different color
+        without framework, css and javascript in single html
+        add a div to fixed top left corner white background black letters, copy prompt into
+    </div>
+    
+    <canvas id="canvas"></canvas>
+    
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        let rotation = 0;
+        const helixPoints = [];
+        const numPoints = 100;
+        const radius = 100;
+        const height = 600;
+        
+        // Generate DNA helix points
+        for (let i = 0; i < numPoints; i++) {
+            const angle1 = (i / numPoints) * Math.PI * 8;
+            const angle2 = angle1 + Math.PI;
+            const y = (i / numPoints) * height - height / 2;
+            
+            helixPoints.push({
+                x1: Math.cos(angle1) * radius,
+                z1: Math.sin(angle1) * radius,
+                x2: Math.cos(angle2) * radius,
+                z2: Math.sin(angle2) * radius,
+                y: y,
+                color1: `hsl(${(i * 3.6) % 360}, 80%, 60%)`,
+                color2: `hsl(${((i * 3.6) + 180) % 360}, 80%, 60%)`
+            });
+        }
+        
+        function project3D(x, y, z, rotation) {
+            const cosR = Math.cos(rotation);
+            const sinR = Math.sin(rotation);
+            
+            const x2 = x * cosR - z * sinR;
+            const z2 = x * sinR + z * cosR;
+            
+            const scale = 400 / (400 + z2);
+            const x3 = x2 * scale + canvas.width / 2;
+            const y3 = y * scale + canvas.height / 2;
+            
+            return { x: x3, y: y3, scale: scale };
+        }
+        
+        function drawSphere(x, y, radius, color, alpha) {
+            const gradient = ctx.createRadialGradient(x - radius/3, y - radius/3, 0, x, y, radius);
+            gradient.addColorStop(0, color.replace('60%', '80%'));
+            gradient.addColorStop(1, color.replace('60%', '30%'));
+            
+            ctx.globalAlpha = alpha;
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        
+        function animate() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            rotation += 0.01;
+            
+            const sortedPoints = helixPoints.map((point, idx) => {
+                const p1 = project3D(point.x1, point.y, point.z1, rotation);
+                const p2 = project3D(point.x2, point.y, point.z2, rotation);
+                
+                return {
+                    p1, p2,
+                    z1: point.z1 * Math.cos(rotation) - point.x1 * Math.sin(rotation),
+                    z2: point.z2 * Math.cos(rotation) - point.x2 * Math.sin(rotation),
+                    color1: point.color1,
+                    color2: point.color2,
+                    idx
+                };
+            }).sort((a, b) => (a.z1 + a.z2) - (b.z1 + b.z2));
+            
+            sortedPoints.forEach(point => {
+                // Draw connecting line
+                ctx.globalAlpha = 0.3;
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(point.p1.x, point.p1.y);
+                ctx.lineTo(point.p2.x, point.p2.y);
+                ctx.stroke();
+                
+                // Draw spheres
+                const size1 = 8 * point.p1.scale;
+                const size2 = 8 * point.p2.scale;
+                
+                drawSphere(point.p1.x, point.p1.y, size1, point.color1, 0.9);
+                drawSphere(point.p2.x, point.p2.y, size2, point.color2, 0.9);
+            });
+            
+            ctx.globalAlpha = 1;
+            requestAnimationFrame(animate);
+        }
+        
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+        
+        animate();
+    </script>
+</body>
+</html>

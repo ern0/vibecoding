@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C64 Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #3e31a2;
+            overflow: hidden;
+            font-family: 'Courier New', monospace;
+        }
+        
+        canvas {
+            display: block;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+        
+        #starfield {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+        
+        #bars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 2;
+        }
+        
+        #sprites {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 3;
+        }
+        
+        #robot {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 4;
+        }
+        
+        #scroller {
+            position: absolute;
+            bottom: 100px;
+            left: 0;
+            z-index: 5;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="starfield"></canvas>
+    <canvas id="bars"></canvas>
+    <canvas id="sprites"></canvas>
+    <canvas id="robot"></canvas>
+    <canvas id="scroller"></canvas>
+
+    <script>
+        // Setup canvases
+        const starCanvas = document.getElementById('starfield');
+        const barsCanvas = document.getElementById('bars');
+        const spritesCanvas = document.getElementById('sprites');
+        const robotCanvas = document.getElementById('robot');
+        const scrollCanvas = document.getElementById('scroller');
+        
+        const starCtx = starCanvas.getContext('2d');
+        const barsCtx = barsCanvas.getContext('2d');
+        const spritesCtx = spritesCanvas.getContext('2d');
+        const robotCtx = robotCanvas.getContext('2d');
+        const scrollCtx = scrollCanvas.getContext('2d');
+        
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        
+        starCanvas.width = barsCanvas.width = spritesCanvas.width = robotCanvas.width = scrollCanvas.width = width;
+        starCanvas.height = barsCanvas.height = spritesCanvas.height = robotCanvas.height = height;
+        scrollCanvas.height = 80;
+        
+        // C64 color palette
+        const c64Colors = [
+            '#7869c4', // Light blue
+            '#5b56e0', // Blue
+            '#b66dbb', // Purple
+            '#8b7ae7', // Light purple
+            '#6d64d8', // Mid blue
+            '#a879bf', // Pink
+            '#ffffff', // White
+            '#f4f582'  // Yellow
+        ];
+        
+        // Starfield
+        const stars = [];
+        for (let i = 0; i < 100; i++) {
+            stars.push({
+                x: Math.random() * width,
+                y: Math.random() * height,
+                z: Math.random() * 1000,
+                speed: 0.5 + Math.random() * 1.5
+            });
+        }
+        
+        function drawStars() {
+            starCtx.fillStyle = '#3e31a2';
+            starCtx.fillRect(0, 0, width, height);
+            
+            stars.forEach(star => {
+                star.z -= star.speed;
+                if (star.z <= 0) {
+                    star.z = 1000;
+                    star.x = Math.random() * width;
+                    star.y = Math.random() * height;
+                }
+                
+                const x = (star.x - width / 2) * (1000 / star.z) + width / 2;
+                const y = (star.y - height / 2) * (1000 / star.z) + height / 2;
+                const size = (1 - star.z / 1000) * 3;
+                
+                const brightness = 1 - star.z / 1000;
+                starCtx.fillStyle = `rgba(255, 255, 255, ${brightness})`;
+                starCtx.fillRect(x, y, size, size);
+            });
+        }
+        
+        // Vertical bouncing bars
+        const bars = [];
+        const barCount = 30;
+        const barWidth = width / barCount;
+        
+        for (let i = 0; i < barCount; i++) {
+            bars.push({
+                height: Math.random() * 300 + 100,
+                phase: Math.random() * Math.PI * 2,
+                speed: 0.5 + Math.random() * 1.5,
+                color: c64Colors[Math.floor(Math.random() * c64Colors.length)],
+                vertical: true
+            });
+        }
+        
+        // Horizontal bars
+        const hBarCount = 20;
+        const hBarHeight = height / hBarCount;
+        
+        for (let i = 0; i < hBarCount; i++) {
+            bars.push({
+                width: Math.random() * 400 + 150,
+                phase: Math.random() * Math.PI * 2,
+                speed: 0.5 + Math.random() * 1.5,
+                color: c64Colors[Math.floor(Math.random() * c64Colors.length)],
+                vertical: false,
+                yPos: i
+            });
+        }
+        
+        function drawBars(time) {
+            barsCtx.clearRect(0, 0, width, height);
+            
+            bars.forEach((bar, i) => {
+                if (bar.vertical) {
+                    // Vertical bars - sine wave motion for height
+                    const sineOffset = Math.sin(time * 0.001 * bar.speed + bar.phase) * 150;
+                    const barHeight = bar.height + sineOffset;
+                    const y = height / 2 - barHeight / 2;
+                    
+                    // Draw vertical bar with gradient
+                    const gradient = barsCtx.createLinearGradient(0, y, 0, y + barHeight);
+                    gradient.addColorStop(0, bar.color);
+                    gradient.addColorStop(0.5, '#ffffff');
+                    gradient.addColorStop(1, bar.color);
+                    
+                    const xPos = (i % barCount) * barWidth;
+                    barsCtx.fillStyle = gradient;
+                    barsCtx.fillRect(xPos, y, barWidth - 4, barHeight);
+                    
+                    // Add top cap
+                    barsCtx.fillStyle = '#ffffff';
+                    barsCtx.fillRect(xPos, y - 4, barWidth - 4, 4);
+                } else {
+                    // Horizontal bars - sine wave motion for width
+                    const sineOffset = Math.sin(time * 0.001 * bar.speed + bar.phase) * 200;
+                    const barWidth = bar.width + sineOffset;
+                    const x = width / 2 - barWidth / 2;
+                    
+                    // Draw horizontal bar with gradient
+                    const gradient = barsCtx.createLinearGradient(x, 0, x + barWidth, 0);
+                    gradient.addColorStop(0, bar.color);
+                    gradient.addColorStop(0.5, '#ffffff');
+                    gradient.addColorStop(1, bar.color);
+                    
+                    const yPos = bar.yPos * hBarHeight;
+                    barsCtx.fillStyle = gradient;
+                    barsCtx.fillRect(x, yPos, barWidth, hBarHeight - 4);
+                    
+                    // Add end cap
+                    barsCtx.fillStyle = '#ffffff';
+                    barsCtx.fillRect(x + barWidth - 4, yPos, 4, hBarHeight - 4);
+                }
+            });
+        }
+        
+        // Sprites
+        const sprites = [];
+        
+        // Sprite drawing functions
+        function drawCircle(ctx, x, y, size, color) {
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.arc(x, y, size, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+        
+        function drawSquare(ctx, x, y, size, color) {
+            ctx.fillStyle = color;
+            ctx.fillRect(x - size, y - size, size * 2, size * 2);
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(x - size, y - size, size * 2, size * 2);
+        }
+        
+        function drawDiamond(ctx, x, y, size, color) {
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.moveTo(x, y - size);
+            ctx.lineTo(x + size, y);
+            ctx.lineTo(x, y + size);
+            ctx.lineTo(x - size, y);
+            ctx.closePath();
+            ctx.fill();
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+        
+        function drawStar(ctx, x, y, size, color) {
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            for (let i = 0; i < 5; i++) {
+                const angle = (i * 4 * Math.PI) / 5 - Math.PI / 2;
+                const r = i % 2 === 0 ? size : size / 2;
+                const px = x + r * Math.cos(angle);
+                const py = y + r * Math.sin(angle);
+                if (i === 0) ctx.moveTo(px, py);
+                else ctx.lineTo(px, py);
+            }
+            ctx.closePath();
+            ctx.fill();
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+        
+        function drawTriangle(ctx, x, y, size, color) {
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.moveTo(x, y - size);
+            ctx.lineTo(x + size, y + size);
+            ctx.lineTo(x - size, y + size);
+            ctx.closePath();
+            ctx.fill();
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+        
+        function drawHexagon(ctx, x, y, size, color) {
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            for (let i = 0; i < 6; i++) {
+                const angle = (i * Math.PI) / 3;
+                const px = x + size * Math.cos(angle);
+                const py = y + size * Math.sin(angle);
+                if (i === 0) ctx.moveTo(px, py);
+                else ctx.lineTo(px, py);
+            }
+            ctx.closePath();
+            ctx.fill();
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+        
+        function drawPlus(ctx, x, y, size, color) {
+            ctx.fillStyle = color;
+            const w = size / 3;
+            ctx.fillRect(x - w, y - size, w * 2, size * 2);
+            ctx.fillRect(x - size, y - w, size * 2, w * 2);
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(x - w, y - size, w * 2, size * 2);
+            ctx.strokeRect(x - size, y - w, size * 2, w * 2);
+        }
+        
+        function drawCross(ctx, x, y, size, color) {
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 8;
+            ctx.beginPath();
+            ctx.moveTo(x - size, y - size);
+            ctx.lineTo(x + size, y + size);
+            ctx.moveTo(x + size, y - size);
+            ctx.lineTo(x - size, y + size);
+            ctx.stroke();
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(x - size, y - size);
+            ctx.lineTo(x + size, y + size);
+            ctx.moveTo(x + size, y - size);
+            ctx.lineTo(x - size, y + size);
+            ctx.stroke();
+        }
+        
+        const spriteShapes = [
+            drawCircle, drawSquare, drawDiamond, drawStar, 
+            drawTriangle, drawHexagon, drawPlus, drawCross
+        ];
+        
+        // Initialize 8 sprites
+        for (let i = 0; i < 8; i++) {
+            sprites.push({
+                x: Math.random() * width,
+                y: Math.random() * height,
+                vx: (Math.random() - 0.5) * 3,
+                vy: (Math.random() - 0.5) * 3,
+                angle: Math.random() * Math.PI * 2,
+                rotationSpeed: (Math.random() - 0.5) * 0.05,
+                size: 20 + Math.random() * 20,
+                color: c64Colors[Math.floor(Math.random() * c64Colors.length)],
+                shape: spriteShapes[i],
+                orbitRadius: 100 + Math.random() * 150,
+                orbitSpeed: 0.001 + Math.random() * 0.002,
+                orbitPhase: Math.random() * Math.PI * 2
+            });
+        }
+        
+        function drawSprites(time) {
+            spritesCtx.clearRect(0, 0, width, height);
+            
+            sprites.forEach((sprite, i) => {
+                // Circular orbit movement
+                const orbitX = width / 2 + Math.cos(time * sprite.orbitSpeed + sprite.orbitPhase) * sprite.orbitRadius;
+                const orbitY = height / 2 + Math.sin(time * sprite.orbitSpeed + sprite.orbitPhase) * sprite.orbitRadius * 0.6;
+                
+                // Update position with bounce
+                sprite.x = orbitX;
+                sprite.y = orbitY;
+                
+                // Rotate sprite
+                sprite.angle += sprite.rotationSpeed;
+                
+                spritesCtx.save();
+                spritesCtx.translate(sprite.x, sprite.y);
+                spritesCtx.rotate(sprite.angle);
+                
+                // Draw sprite
+                sprite.shape(spritesCtx, 0, 0, sprite.size, sprite.color);
+                
+                spritesCtx.restore();
+            });
+        }
+        
+        // Robot
+        let robotVisible = false;
+        let robotNextAppear = 3000;
+        let robotAppearTime = 0;
+        let robotBlinkState = true;
+        let lastBlinkTime = 0;
+        
+        function drawRobot(time) {
+            robotCtx.clearRect(0, 0, width, height);
+            
+            // Check if robot should appear
+            if (!robotVisible && time > robotNextAppear) {
+                robotVisible = true;
+                robotAppearTime = time;
+                robotNextAppear = time + 8000 + Math.random() * 7000; // Appear every 8-15 seconds
+            }
+            
+            // Check if robot should disappear
+            if (robotVisible && time - robotAppearTime > 5000) {
+                robotVisible = false;
+            }
+            
+            if (!robotVisible) return;
+            
+            // Blink every 300ms
+            if (time - lastBlinkTime > 300) {
+                robotBlinkState = !robotBlinkState;
+                lastBlinkTime = time;
+            }
+            
+            const robotX = width / 2;
+            const robotY = height / 2 - 50;
+            const scale = 1 + Math.sin(time * 0.003) * 0.1; // Pulsing effect
+            
+            robotCtx.save();
+            robotCtx.translate(robotX, robotY);
+            robotCtx.scale(scale, scale);
+            
+            // Draw robot
+            // Head
+            robotCtx.fillStyle = '#7869c4';
+            robotCtx.fillRect(-40, -60, 80, 70);
+            robotCtx.strokeStyle = '#ffffff';
+            robotCtx.lineWidth = 3;
+            robotCtx.strokeRect(-40, -60, 80, 70);
+            
+            // Antenna
+            robotCtx.fillStyle = '#f4f582';
+            robotCtx.fillRect(-5, -80, 10, 20);
+            robotCtx.beginPath();
+            robotCtx.arc(0, -80, 8, 0, Math.PI * 2);
+            robotCtx.fill();
+            
+            // Eyes - blinking
+            if (robotBlinkState) {
+                robotCtx.fillStyle = '#ffffff';
+                robotCtx.fillRect(-25, -45, 15, 15);
+                robotCtx.fillRect(10, -45, 15, 15);
+                
+                // Pupils
+                robotCtx.fillStyle = '#000000';
+                robotCtx.fillRect(-20, -40, 5, 5);
+                robotCtx.fillRect(15, -40, 5, 5);
+            } else {
+                // Closed eyes
+                robotCtx.strokeStyle = '#ffffff';
+                robotCtx.lineWidth = 3;
+                robotCtx.beginPath();
+                robotCtx.moveTo(-25, -37);
+                robotCtx.lineTo(-10, -37);
+                robotCtx.moveTo(10, -37);
+                robotCtx.lineTo(25, -37);
+                robotCtx.stroke();
+            }
+            
+            // Mouth
+            robotCtx.fillStyle = '#000000';
+            robotCtx.fillRect(-20, -15, 40, 3);
+            robotCtx.fillRect(-20, -15, 3, 10);
+            robotCtx.fillRect(-10, -15, 3, 10);
+            robotCtx.fillRect(0, -15, 3, 10);
+            robotCtx.fillRect(10, -15, 3, 10);
+            robotCtx.fillRect(17, -15, 3, 10);
+            
+            // Body
+            robotCtx.fillStyle = '#5b56e0';
+            robotCtx.fillRect(-35, 15, 70, 80);
+            robotCtx.strokeStyle = '#ffffff';
+            robotCtx.lineWidth = 3;
+            robotCtx.strokeRect(-35, 15, 70, 80);
+            
+            // Body details
+            robotCtx.fillStyle = '#f4f582';
+            robotCtx.beginPath();
+            robotCtx.arc(0, 50, 15, 0, Math.PI * 2);
+            robotCtx.fill();
+            robotCtx.strokeStyle = '#ffffff';
+            robotCtx.stroke();
+            
+            // Arms
+            robotCtx.fillStyle = '#7869c4';
+            robotCtx.fillRect(-60, 20, 20, 50);
+            robotCtx.fillRect(40, 20, 20, 50);
+            robotCtx.strokeStyle = '#ffffff';
+            robotCtx.strokeRect(-60, 20, 20, 50);
+            robotCtx.strokeRect(40, 20, 20, 50);
+            
+            // Hands
+            robotCtx.fillStyle = '#b66dbb';
+            robotCtx.fillRect(-65, 70, 30, 15);
+            robotCtx.fillRect(35, 70, 30, 15);
+            robotCtx.strokeRect(-65, 70, 30, 15);
+            robotCtx.strokeRect(35, 70, 30, 15);
+            
+            robotCtx.restore();
+        }
+        const scrollText = "    HI FOLKS, THIS IS VIBE DEMO    ";
+        let scrollOffset = 0;
+        
+        function drawScroller(time) {
+            scrollCtx.fillStyle = '#3e31a2';
+            scrollCtx.fillRect(0, 0, scrollCanvas.width, scrollCanvas.height);
+            
+            scrollCtx.font = 'bold 48px "Courier New"';
+            scrollCtx.textBaseline = 'middle';
+            
+            const charWidth = 30;
+            const text = scrollText.repeat(3);
+            
+            for (let i = 0; i < text.length; i++) {
+                const x = i * charWidth - scrollOffset;
+                if (x > -charWidth && x < width + charWidth) {
+                    const sineY = Math.sin((x + time * 0.5) * 0.02) * 20;
+                    const scale = 1 + Math.sin((x + time * 0.5) * 0.02) * 0.2;
+                    
+                    scrollCtx.save();
+                    scrollCtx.translate(x + charWidth / 2, scrollCanvas.height / 2 + sineY);
+                    scrollCtx.scale(scale, scale);
+                    
+                    // Shadow
+                    scrollCtx.fillStyle = '#000000';
+                    scrollCtx.fillText(text[i], 2, 2);
+                    
+                    // Main text with color cycling
+                    const colorIndex = Math.floor((i + time * 0.01) % c64Colors.length);
+                    scrollCtx.fillStyle = c64Colors[colorIndex];
+                    scrollCtx.fillText(text[i], 0, 0);
+                    
+                    scrollCtx.restore();
+                }
+            }
+            
+            scrollOffset += 2;
+            if (scrollOffset > scrollText.length * charWidth) {
+                scrollOffset = 0;
+            }
+        }
+        
+        // Animation loop
+        let startTime = Date.now();
+        
+        function animate() {
+            const time = Date.now() - startTime;
+            
+            drawStars();
+            drawBars(time);
+            drawSprites(time);
+            drawRobot(time);
+            drawScroller(time);
+            
+            requestAnimationFrame(animate);
+        }
+        
+        animate();
+        
+        // Handle resize
+        window.addEventListener('resize', () => {
+            location.reload();
+        });
+    </script>
+</body>
+</html>
