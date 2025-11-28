@@ -10,7 +10,7 @@ so the result is based on a single prompt.
 I often execute the same prompt against different LLMs to choose the best one.
 
 
-## Peace
+## The Faces of Peace
 
 This little slideshow
 was created in honor of the <strike>cancelled</strike> postponed
