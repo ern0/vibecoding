@@ -1,11 +1,19 @@
 # vibecoding
 
-Prompt engineering
+Prompt engineering is fun.
 
-## [Peace](peace)
+I use a simple, iterative method:
+craft a prompt, evaluate the output,
+then refine the prompt until I'm satisfied.
+Each new iteration starts from a clean context,
+so the result is based on a single prompt.
+I often execute the same prompt against different LLMs to choose the best one.
+
+
+## Peace
 
 This little slideshow
-was created in honor of the <strike>missed</strike> postponed
+was created in honor of the <strike>cancelled</strike> postponed
 [Budapest Peace Summit](https://en.wikipedia.org/wiki/2025_Russia%E2%80%93United_States_summit_in_Hungary).
 
 The gallery code,
