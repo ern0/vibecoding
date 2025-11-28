@@ -12,7 +12,7 @@ The gallery code,
 the base64 converter, and
 the images are all AI-generated.
 
-[Check it out!](http://ern0.github.io/peace/peace/html)
+[Check it out!](http://ern0.github.io/peace/peace.html)
 
 
 ## DNA Spiral
