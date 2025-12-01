@@ -20,14 +20,14 @@ The gallery code,
 the base64 converter, and
 the images are all AI-generated.
 
-[Check it out!](peace/peace.html)
+[Check it out!](https://ern0.github.io/peace/peace.html)
 
 
 ## DNA Spiral
 
 My best effort-to-result ratio product.
 
-[Check it out!](dna_spiral_3d.html)
+[Check it out!](https://ern0.github.io/dna_spiral_3d.html)
 
 
 ## Solar System
@@ -35,18 +35,18 @@ My best effort-to-result ratio product.
 Another example for
 creating magic with just a few words.
 
-[Check it out!](solar_system.html)
+[Check it out!](https://ern0.github.io/solar_system.html)
 
 
 ## Oldschol Demo
 
 Not really authentic, interesting colors.
 
-[Check it out!](oldschool_demo.html)
+[Check it out!](https://ern0.github.io/oldschool_demo.html)
 
 ## Commodore 64 Info Page
 
 Weird version of Commodore 64.
 
-[Check it out!](commodore64_infopage.html)
+[Check it out!](https://ern0.github.io/commodore64_infopage.html)
 
