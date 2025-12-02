@@ -9,6 +9,50 @@ Each new iteration starts from a clean context,
 so the result is based on a single prompt.
 I often execute the same prompt against different LLMs to choose the best one.
 
+## Colored balls falling
+
+Little effort, nice result again.
+Note that the prompt in the webpage is not the original.
+
+[Check it out!](https://ern0.github.io/vibecoding/colored_balls_falling.html)
+
+### The prompt
+
+> Single webpage, CSS and JS embedded. 3D scene, balls are falling from up, different colors. Sunset in the horizon. Use canvas. Add topleft box with full prompt in it, always on top.
+
+Agent: DeepSeek (2025.12.02)
+
+### Additional comments by LLM
+
+#### 3D Falling Balls Sunset Scene ####
+
+I'll create a canvas-based 3D scene with colored balls falling against a sunset horizon. Here's a complete implementation with embedded CSS and JavaScript:
+(...)
+
+#### Features of this implementation:
+
+1. **3D Scene with Canvas**: Uses HTML5 Canvas to render a sunset background with colored falling balls.
+
+2. **Realistic 3D Balls**: Each ball has:
+   - 3D depth (z-coordinate) for parallax effects
+   - Dynamic lighting with highlights and shadows
+   - Rotation for added realism
+   - Size-based falling speeds
+
+3. **Sunset Horizon**: A beautiful gradient sunset with a glowing sun element at the horizon.
+
+4. **Top-left Prompt Box**: Always visible on top with the full scene description.
+
+5. **Interactive Controls**:
+   - Add more balls to the scene
+   - Change falling speed (Normal, Fast, Very Fast, Slow)
+   - Reset the scene to initial state
+
+6. **Performance Stats**: Shows ball count, current speed, and FPS counter.
+
+7. **Responsive Design**: The canvas automatically resizes with the window.
+
+The balls have a realistic 3D appearance with highlights and shadows, and they fade as they approach the horizon to enhance the sunset atmosphere. You can interact with the scene using the control buttons at the bottom-right.
 
 ## The Faces of Peace
 

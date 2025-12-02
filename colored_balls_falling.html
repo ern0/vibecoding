@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Falling Balls Sunset Scene</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0a1a;
+            color: #fff;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        #container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+        }
+        
+        canvas {
+            display: block;
+            background: linear-gradient(to bottom, #0a0a1a 0%, #1a1a2e 30%, #2c2c54 70%, #4a4a7a 100%);
+        }
+        
+        .prompt-box {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            max-width: 400px;
+            background: rgba(10, 10, 26, 0.85);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 165, 0, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            z-index: 100;
+        }
+        
+        .prompt-box h2 {
+            color: #ffa500;
+            margin-bottom: 12px;
+            font-size: 1.4rem;
+            border-bottom: 1px solid rgba(255, 165, 0, 0.3);
+            padding-bottom: 8px;
+        }
+        
+        .prompt-box p {
+            line-height: 1.5;
+            font-size: 1rem;
+            color: #e0e0ff;
+        }
+        
+        .prompt-box .highlight {
+            color: #ffa500;
+            font-weight: 600;
+        }
+        
+        .controls {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+        
+        .control-btn {
+            background: rgba(255, 165, 0, 0.2);
+            border: 1px solid rgba(255, 165, 0, 0.5);
+            color: #ffa500;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .control-btn:hover {
+            background: rgba(255, 165, 0, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .stats {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(10, 10, 26, 0.7);
+            border-radius: 8px;
+            padding: 12px 18px;
+            font-size: 0.9rem;
+            color: #a0a0ff;
+            border: 1px solid rgba(255, 165, 0, 0.2);
+        }
+        
+        .sun {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, #ff4500, #ff8c00, #ffa500);
+            border-radius: 50%;
+            transform: translateX(-50%) translateY(50%);
+            box-shadow: 0 0 80px #ff4500, 0 0 120px #ff8c00;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <canvas id="sceneCanvas"></canvas>
+        
+        <div class="prompt-box">
+            <h2>Scene Description</h2>
+            <p>Single webpage with embedded CSS and JS. 3D scene with <span class="highlight">colored balls falling</span> from the top against a <span class="highlight">sunset horizon</span>. Implemented with Canvas API. This topleft box contains the full prompt and is always on top.</p>
+        </div>
+        
+        <div class="stats">
+            <div>Balls: <span id="ballCount">0</span></div>
+            <div>Speed: <span id="speedValue">Normal</span></div>
+            <div>FPS: <span id="fpsCounter">60</span></div>
+        </div>
+        
+        <div class="controls">
+            <button class="control-btn" id="addBalls">Add Balls</button>
+            <button class="control-btn" id="changeSpeed">Change Speed</button>
+            <button class="control-btn" id="resetScene">Reset Scene</button>
+        </div>
+        
+        <div class="sun"></div>
+    </div>
+
+    <script>
+        // Canvas setup
+        const canvas = document.getElementById('sceneCanvas');
+        const ctx = canvas.getContext('2d');
+        const container = document.getElementById('container');
+        
+        // Set canvas size to match container
+        function resizeCanvas() {
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+        }
+        
+        // Initialize canvas size
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        
+        // Ball class
+        class Ball {
+            constructor() {
+                this.radius = Math.random() * 25 + 10; // Random size between 10-35px
+                this.x = Math.random() * canvas.width;
+                this.y = -this.radius;
+                this.z = Math.random() * 500; // Z depth for 3D effect
+                
+                // Colors for balls
+                const colors = [
+                    '#FF6B6B', '#FFD166', '#06D6A0', '#118AB2', 
+                    '#EF476F', '#9B5DE5', '#00BBF9', '#F15BB5'
+                ];
+                this.color = colors[Math.floor(Math.random() * colors.length)];
+                
+                // Speed based on size (larger balls fall faster)
+                this.speedY = Math.random() * 2 + 1 + (35 - this.radius) / 15;
+                this.speedX = (Math.random() - 0.5) * 2; // Slight horizontal movement
+                
+                // Rotation for 3D effect
+                this.rotation = 0;
+                this.rotationSpeed = (Math.random() - 0.5) * 0.05;
+                
+                // Opacity based on depth
+                this.opacity = 1 - (this.z / 1000);
+            }
+            
+            update() {
+                // Move ball
+                this.y += this.speedY * speedMultiplier;
+                this.x += this.speedX * speedMultiplier;
+                this.rotation += this.rotationSpeed;
+                
+                // Wrap around if ball goes off screen
+                if (this.y > canvas.height + this.radius) {
+                    this.y = -this.radius;
+                    this.x = Math.random() * canvas.width;
+                }
+                
+                if (this.x < -this.radius) {
+                    this.x = canvas.width + this.radius;
+                } else if (this.x > canvas.width + this.radius) {
+                    this.x = -this.radius;
+                }
+                
+                // Update opacity based on position (fade as they fall)
+                const fadeStart = canvas.height * 0.7;
+                if (this.y > fadeStart) {
+                    this.opacity = 1 - ((this.y - fadeStart) / (canvas.height - fadeStart));
+                }
+            }
+            
+            draw() {
+                ctx.save();
+                
+                // Apply perspective based on z-depth
+                const scale = 1 - (this.z / 1000);
+                const x = this.x + (this.z / 10); // Parallax effect
+                const y = this.y + (this.z / 20);
+                
+                // Set opacity
+                ctx.globalAlpha = this.opacity * scale;
+                
+                // Draw main ball with gradient
+                const gradient = ctx.createRadialGradient(
+                    x, y, 0,
+                    x, y, this.radius
+                );
+                gradient.addColorStop(0, this.color);
+                gradient.addColorStop(1, this.color.replace(')', ', 0.7)').replace('rgb', 'rgba'));
+                
+                ctx.fillStyle = gradient;
+                
+                // Apply rotation for 3D effect
+                ctx.translate(x, y);
+                ctx.rotate(this.rotation);
+                
+                // Draw the ball
+                ctx.beginPath();
+                ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Draw highlight for 3D effect
+                const highlightGradient = ctx.createRadialGradient(
+                    -this.radius/3, -this.radius/3, 0,
+                    -this.radius/3, -this.radius/3, this.radius/2
+                );
+                highlightGradient.addColorStop(0, 'rgba(255, 255, 255, 0.8)');
+                highlightGradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+                
+                ctx.fillStyle = highlightGradient;
+                ctx.beginPath();
+                ctx.arc(-this.radius/3, -this.radius/3, this.radius/2, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Draw shadow
+                const shadowGradient = ctx.createRadialGradient(
+                    this.radius/3, this.radius/3, 0,
+                    this.radius/3, this.radius/3, this.radius/2
+                );
+                shadowGradient.addColorStop(0, 'rgba(0, 0, 0, 0.4)');
+                shadowGradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+                
+                ctx.fillStyle = shadowGradient;
+                ctx.beginPath();
+                ctx.arc(this.radius/3, this.radius/3, this.radius/2, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.restore();
+            }
+        }
+        
+        // Create initial balls
+        let balls = [];
+        const initialBallCount = 30;
+        for (let i = 0; i < initialBallCount; i++) {
+            balls.push(new Ball());
+        }
+        
+        // Control variables
+        let speedMultiplier = 1;
+        let frameCount = 0;
+        let lastTimestamp = 0;
+        let fps = 60;
+        
+        // Animation loop
+        function animate(timestamp) {
+            // Calculate FPS
+            frameCount++;
+            if (timestamp - lastTimestamp >= 1000) {
+                fps = Math.round((frameCount * 1000) / (timestamp - lastTimestamp));
+                document.getElementById('fpsCounter').textContent = fps;
+                frameCount = 0;
+                lastTimestamp = timestamp;
+            }
+            
+            // Clear canvas with sunset gradient
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            gradient.addColorStop(0, '#0a0a1a');
+            gradient.addColorStop(0.3, '#1a1a2e');
+            gradient.addColorStop(0.5, '#2c2c54');
+            gradient.addColorStop(0.7, '#4a4a7a');
+            gradient.addColorStop(1, '#6a6a9a');
+            
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw sunset horizon glow
+            const horizonGradient = ctx.createRadialGradient(
+                canvas.width/2, canvas.height, 0,
+                canvas.width/2, canvas.height, canvas.height * 0.7
+            );
+            horizonGradient.addColorStop(0, 'rgba(255, 69, 0, 0.6)');
+            horizonGradient.addColorStop(0.5, 'rgba(255, 140, 0, 0.3)');
+            horizonGradient.addColorStop(1, 'rgba(255, 165, 0, 0)');
+            
+            ctx.fillStyle = horizonGradient;
+            ctx.fillRect(0, canvas.height * 0.7, canvas.width, canvas.height * 0.3);
+            
+            // Update and draw balls
+            balls.forEach(ball => {
+                ball.update();
+                ball.draw();
+            });
+            
+            requestAnimationFrame(animate);
+        }
+        
+        // Start animation
+        animate(0);
+        
+        // Update ball count display
+        function updateBallCount() {
+            document.getElementById('ballCount').textContent = balls.length;
+        }
+        
+        // Update speed display
+        function updateSpeedDisplay() {
+            const speedText = speedMultiplier === 1 ? 'Normal' : 
+                             speedMultiplier === 2 ? 'Fast' : 
+                             speedMultiplier === 0.5 ? 'Slow' : 'Very Fast';
+            document.getElementById('speedValue').textContent = speedText;
+        }
+        
+        // Event listeners for controls
+        document.getElementById('addBalls').addEventListener('click', () => {
+            for (let i = 0; i < 10; i++) {
+                balls.push(new Ball());
+            }
+            updateBallCount();
+        });
+        
+        document.getElementById('changeSpeed').addEventListener('click', () => {
+            if (speedMultiplier === 1) {
+                speedMultiplier = 2;
+            } else if (speedMultiplier === 2) {
+                speedMultiplier = 3;
+            } else if (speedMultiplier === 3) {
+                speedMultiplier = 0.5;
+            } else {
+                speedMultiplier = 1;
+            }
+            updateSpeedDisplay();
+        });
+        
+        document.getElementById('resetScene').addEventListener('click', () => {
+            balls = [];
+            for (let i = 0; i < initialBallCount; i++) {
+                balls.push(new Ball());
+            }
+            speedMultiplier = 1;
+            updateBallCount();
+            updateSpeedDisplay();
+        });
+        
+        // Initial display updates
+        updateBallCount();
+        updateSpeedDisplay();
+    </script>
+</body>
+</html>
