@@ -9,6 +9,10 @@ Each new iteration starts from a clean context,
 so the result is based on a single prompt.
 I often execute the same prompt against different LLMs to choose the best one.
 
+## Heavy Snowing (Claude Sonnet 4.5, 2005.12.03)
+
+[Merry xmas!](https://ern0.github.io/vibecoding/heavy_snowing.html)
+
 ## Colored balls falling (DeepSeek, 2025.12.02)
 
 Little effort, nice result again.
