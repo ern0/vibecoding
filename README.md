@@ -9,7 +9,13 @@ Each new iteration starts from a clean context,
 so the result is based on a single prompt.
 I often execute the same prompt against different LLMs to choose the best one.
 
-## Heavy Snowing (Claude Sonnet 4.5, 2005.12.03)
+## Tetris (DeepSeek, 2025.02.24)
+
+> make a simple tetris game for web, no frameworks, embed all code into html
+
+[Play Tetris](https://ern0.github.io/vibecoding/tetris.html)
+
+## Heavy Snowing (Claude Sonnet 4.5, 2025.12.03)
 
 [Merry xmas!](https://ern0.github.io/vibecoding/heavy_snowing.html)
 
