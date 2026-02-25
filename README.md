@@ -9,7 +9,7 @@ Each new iteration starts from a clean context,
 so the result is based on a single prompt.
 I often execute the same prompt against different LLMs to choose the best one.
 
-## Tetris (DeepSeek, 2025.02.24)
+## Tetris (DeepSeek, 2026.02.24)
 
 > make a simple tetris game for web, no frameworks, embed all code into html
 
