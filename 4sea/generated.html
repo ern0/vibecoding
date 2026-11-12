@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forest Harmony | Music & Nature</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Base Styles & Forest Color Scheme */
+        :root {
+            --forest-dark: #0a2f1d;
+            --forest-medium: #1b5e20;
+            --forest-light: #4c8c4a;
+            --forest-lighter: #7cb342;
+            --forest-accent: #c5e1a5;
+            --forest-text: #f1f8e9;
+            --forest-bg: #0d1f0c;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--forest-bg);
+            color: var(--forest-text);
+            line-height: 1.6;
+            font-size: 20px; /* Large base font */
+        }
+
+        a {
+            text-decoration: none;
+            color: var(--forest-lighter);
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: var(--forest-accent);
+        }
+
+        h1, h2, h3, h4 {
+            font-weight: 700;
+            line-height: 1.3;
+            margin-bottom: 1rem;
+            color: var(--forest-accent);
+        }
+
+        h1 { font-size: 3.5rem; }
+        h2 { font-size: 2.8rem; }
+        h3 { font-size: 2.2rem; }
+
+        p {
+            margin-bottom: 1.5rem;
+            font-size: 1.3rem;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header & Navigation */
+        header {
+            background-color: var(--forest-dark);
+            padding: 1.5rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--forest-lighter);
+            display: flex;
+            align-items: center;
+        }
+
+        .logo i {
+            margin-right: 10px;
+            color: var(--forest-accent);
+        }
+
+        .nav-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--forest-text);
+            font-size: 1.8rem;
+            cursor: pointer;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+
+        nav li {
+            margin-left: 2rem;
+        }
+
+        nav a {
+            font-size: 1.4rem;
+            font-weight: 600;
+            padding: 0.5rem 0;
+            position: relative;
+        }
+
+        nav a.active {
+            color: var(--forest-accent);
+        }
+
+        nav a.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: var(--forest-accent);
+        }
+
+        /* Main Content */
+        main {
+            min-height: calc(100vh - 160px);
+            padding: 3rem 0;
+        }
+
+        .page {
+            display: none;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 4rem 0;
+            background: linear-gradient(to bottom, rgba(10, 47, 29, 0.8), rgba(13, 31, 12, 0.9)), url('https://images.unsplash.com/photo-1448375240586-882707db888b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80');
+            background-size: cover;
+            background-position: center;
+            border-radius: 15px;
+            margin-bottom: 3rem;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .hero p {
+            font-size: 1.8rem;
+            max-width: 800px;
+            margin: 0 auto 2rem;
+        }
+
+        /* Music Page */
+        .music-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2.5rem;
+            margin-top: 2rem;
+        }
+
+        .music-player {
+            background-color: var(--forest-dark);
+            border-radius: 15px;
+            padding: 1.8rem;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .music-player:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .music-player h3 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            color: var(--forest-lighter);
+        }
+
+        .music-player p {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            color: var(--forest-accent);
+        }
+
+        .player-controls {
+            display: flex;
+            align-items: center;
+            margin-top: 1.5rem;
+        }
+
+        .play-btn {
+            background-color: var(--forest-medium);
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            margin-right: 1.5rem;
+            transition: background-color 0.3s;
+        }
+
+        .play-btn:hover {
+            background-color: var(--forest-light);
+        }
+
+        .progress-bar {
+            flex-grow: 1;
+            height: 8px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            width: 0%;
+            background-color: var(--forest-lighter);
+            transition: width 0.1s;
+        }
+
+        .time {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.5rem;
+            font-size: 1rem;
+        }
+
+        /* About Page */
+        .about-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .about-text {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .about-image {
+            flex: 1;
+            min-width: 300px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        .about-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* Concept Page */
+        .concept-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2.5rem;
+            margin-top: 2rem;
+        }
+
+        .concept-card {
+            background-color: rgba(27, 94, 32, 0.2);
+            border-radius: 15px;
+            padding: 2rem;
+            border-left: 5px solid var(--forest-lighter);
+        }
+
+        .concept-card i {
+            font-size: 2.5rem;
+            color: var(--forest-accent);
+            margin-bottom: 1.5rem;
+        }
+
+        /* Support Page */
+        .support-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2.5rem;
+            margin-top: 2rem;
+        }
+
+        .support-card {
+            background-color: rgba(10, 47, 29, 0.6);
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .support-card:hover {
+            transform: scale(1.05);
+        }
+
+        .support-card h3 {
+            color: var(--forest-lighter);
+        }
+
+        .support-price {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--forest-accent);
+            margin: 1rem 0;
+        }
+
+        .support-btn {
+            display: inline-block;
+            background-color: var(--forest-medium);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin-top: 1rem;
+            transition: background-color 0.3s;
+        }
+
+        .support-btn:hover {
+            background-color: var(--forest-light);
+        }
+
+        /* Test Page */
+        .test-form {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: var(--forest-dark);
+            padding: 3rem;
+            border-radius: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 1.4rem;
+            margin-bottom: 0.8rem;
+            color: var(--forest-accent);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1.2rem;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--forest-light);
+            border-radius: 8px;
+            color: var(--forest-text);
+        }
+
+        .submit-btn {
+            background-color: var(--forest-medium);
+            color: white;
+            border: none;
+            padding: 1.2rem 3rem;
+            font-size: 1.4rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .submit-btn:hover {
+            background-color: var(--forest-light);
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--forest-dark);
+            padding: 2.5rem 0;
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        .footer-content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-logo {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--forest-lighter);
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .social-icons a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            background-color: var(--forest-medium);
+            border-radius: 50%;
+            font-size: 1.5rem;
+            transition: background-color 0.3s;
+        }
+
+        .social-icons a:hover {
+            background-color: var(--forest-light);
+        }
+
+        .copyright {
+            width: 100%;
+            margin-top: 2rem;
+            font-size: 1.1rem;
+            color: var(--forest-accent);
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            h1 { font-size: 3rem; }
+            h2 { font-size: 2.5rem; }
+
+            .hero h1 {
+                font-size: 3.5rem;
+            }
+
+            .music-grid {
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                font-size: 18px;
+            }
+
+            h1 { font-size: 2.8rem; }
+            h2 { font-size: 2.2rem; }
+
+            .nav-toggle {
+                display: block;
+            }
+
+            nav ul {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background-color: var(--forest-dark);
+                flex-direction: column;
+                padding: 1rem 0;
+                box-shadow: 0 10px 15px rgba(0, 0, 0, 0.3);
+            }
+
+            nav ul.active {
+                display: flex;
+            }
+
+            nav li {
+                margin: 0;
+                text-align: center;
+            }
+
+            nav a {
+                display: block;
+                padding: 1rem;
+                font-size: 1.3rem;
+            }
+
+            .hero {
+                padding: 3rem 0;
+            }
+
+            .hero h1 {
+                font-size: 3rem;
+            }
+
+            .hero p {
+                font-size: 1.5rem;
+            }
+
+            .test-form {
+                padding: 2rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            h1 { font-size: 2.5rem; }
+            h2 { font-size: 2rem; }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero p {
+                font-size: 1.3rem;
+            }
+
+            .music-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+
+            .footer-logo {
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header & Navigation -->
+    <header>
+        <div class="container header-content">
+            <div class="logo">
+                <i class="fas fa-tree"></i>
+                Forest Harmony
+            </div>
+
+            <button class="nav-toggle" id="navToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+
+            <nav>
+                <ul id="navMenu">
+                    <li><a href="#" class="nav-link active" data-page="home">Home</a></li>
+                    <li><a href="#" class="nav-link" data-page="concept">Concept</a></li>
+                    <li><a href="#" class="nav-link" data-page="music">Music</a></li>
+                    <li><a href="#" class="nav-link" data-page="about">About</a></li>
+                    <li><a href="#" class="nav-link" data-page="support">Project Support</a></li>
+                    <li><a href="#" class="nav-link" data-page="test">Test</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <div class="container">
+            <!-- Home Page -->
+            <section id="home" class="page active">
+                <div class="hero">
+                    <h1>Forest Harmony</h1>
+                    <p>Where nature's serenity meets melodic inspiration. Immerse yourself in the sounds of the forest.</p>
+                    <a href="#" class="support-btn" data-page="music">Explore Music</a>
+                </div>
+
+                <div class="intro">
+                    <h2>Welcome to Our Forest Sanctuary</h2>
+                    <p>Discover a unique blend of natural soundscapes and musical compositions inspired by the world's most beautiful forests. Our project aims to connect people with nature through auditory experiences.</p>
+                    <p>Each track is meticulously crafted using field recordings from forests around the globe, combined with musical elements that enhance the natural atmosphere.</p>
+                </div>
+            </section>
+
+            <!-- Concept Page -->
+            <section id="concept" class="page">
+                <h2>Our Concept</h2>
+                <p>The Forest Harmony concept is built on three fundamental pillars that guide our creative process and project development.</p>
+
+                <div class="concept-grid">
+                    <div class="concept-card">
+                        <i class="fas fa-leaf"></i>
+                        <h3>Nature Immersion</h3>
+                        <p>We believe in the restorative power of nature. Our recordings capture authentic forest environments to create immersive auditory experiences.</p>
+                    </div>
+
+                    <div class="concept-card">
+                        <i class="fas fa-music"></i>
+                        <h3>Musical Integration</h3>
+                        <p>Natural sounds are enhanced with carefully composed musical elements that complement rather than overpower the organic soundscape.</p>
+                    </div>
+
+                    <div class="concept-card">
+                        <i class="fas fa-heart"></i>
+                        <h3>Emotional Connection</h3>
+                        <p>Our goal is to evoke emotional responses and create meaningful connections between listeners and the natural world.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Music Page -->
+            <section id="music" class="page">
+                <h2>Forest Music Collection</h2>
+                <p>Explore our curated collection of forest-inspired music. Each track combines natural soundscapes with musical elements.</p>
+
+                <div class="music-grid">
+                    <!-- Music Player 1 -->
+                    <div class="music-player">
+                        <h3>Whispering Pines</h3>
+                        <p>Gentle winds through pine forests with soft piano melodies</p>
+                        <div class="player-controls">
+                            <button class="play-btn" data-track="1">
+                                <i class="fas fa-play"></i>
+                            </button>
+                            <div class="progress-bar">
+                                <div class="progress" data-track="1"></div>
+                            </div>
+                        </div>
+                        <div class="time">
+                            <span class="current-time" data-track="1">0:00</span>
+                            <span class="duration" data-track="1">4:32</span>
+                        </div>
+                    </div>
+
+                    <!-- Music Player 2 -->
+                    <div class="music-player">
+                        <h3>Morning Dew</h3>
+                        <p>Early morning forest awakening with flute accompaniment</p>
+                        <div class="player-controls">
+                            <button class="play-btn" data-track="2">
+                                <i class="fas fa-play"></i>
+                            </button>
+                            <div class="progress-bar">
+                                <div class="progress" data-track="2"></div>
+                            </div>
+                        </div>
+                        <div class="time">
+                            <span class="current-time" data-track="2">0:00</span>
+                            <span class="duration" data-track="2">5:15</span>
+                        </div>
+                    </div>
+
+                    <!-- Music Player 3 -->
+                    <div class="music-player">
+                        <h3>River Flow</h3>
+                        <p>Flowing water sounds with ambient string arrangements</p>
+                        <div class="player-controls">
+                            <button class="play-btn" data-track="3">
+                                <i class="fas fa-play"></i>
+                            </button>
+                            <div class="progress-bar">
+                                <div class="progress" data-track="3"></div>
+                            </div>
+                        </div>
+                        <div class="time">
+                            <span class="current-time" data-track="3">0:00</span>
+                            <span class="duration" data-track="3">6:02</span>
+                        </div>
+                    </div>
+
+                    <!-- Music Player 4 -->
+                    <div class="music-player">
+                        <h3>Autumn Leaves</h3>
+                        <p>Crunching leaves with acoustic guitar harmonies</p>
+                        <div class="player-controls">
+                            <button class="play-btn" data-track="4">
+                                <i class="fas fa-play"></i>
+                            </button>
+                            <div class="progress-bar">
+                                <div class="progress" data-track="4"></div>
+                            </div>
+                        </div>
+                        <div class="time">
+                            <span class="current-time" data-track="4">0:00</span>
+                            <span class="duration" data-track="4">3:48</span>
+                        </div>
+                    </div>
+
+                    <!-- Music Player 5 -->
+                    <div class="music-player">
+                        <h3>Mountain Echo</h3>
+                        <p>Distant bird calls with ethereal vocal harmonies</p>
+                        <div class="player-controls">
+                            <button class="play-btn" data-track="5">
+                                <i class="fas fa-play"></i>
+                            </button>
+                            <div class="progress-bar">
+                                <div class="progress" data-track="5"></div>
+                            </div>
+                        </div>
+                        <div class="time">
+                            <span class="current-time" data-track="5">0:00</span>
+                            <span class="duration" data-track="5">7:21</span>
+                        </div>
+                    </div>
+
+                    <!-- Music Player 6 -->
+                    <div class="music-player">
+                        <h3>Moonlit Forest</h3>
+                        <p>Nighttime forest sounds with soft synthesizer pads</p>
+                        <div class="player-controls">
+                            <button class="play-btn" data-track="6">
+                                <i class="fas fa-play"></i>
+                            </button>
+                            <div class="progress-bar">
+                                <div class="progress" data-track="6"></div>
+                            </div>
+                        </div>
+                        <div class="time">
+                            <span class="current-time" data-track="6">0:00</span>
+                            <span class="duration" data-track="6">8:05</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- About Page -->
+            <section id="about" class="page">
+                <h2>About Forest Harmony</h2>
+
+                <div class="about-content">
+                    <div class="about-text">
+                        <p>Forest Harmony was founded in 2020 by a group of musicians, sound engineers, and nature enthusiasts who shared a common vision: to bridge the gap between humanity and nature through sound.</p>
+
+                        <p>Our team travels to forests around the world, from the redwood forests of California to the tropical rainforests of Borneo, capturing high-quality field recordings of natural environments.</p>
+
+                        <p>Back in our studio, these recordings are carefully blended with musical compositions that enhance the natural soundscape without overwhelming it. The result is a unique auditory experience that can transport listeners to these beautiful locations.</p>
+
+                        <p>We believe that by connecting people with nature through sound, we can foster greater appreciation for our planet's ecosystems and support conservation efforts worldwide.</p>
+                    </div>
+
+                    <div class="about-image">
+                        <img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Forest path">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Project Support Page -->
+            <section id="support" class="page">
+                <h2>Support Our Project</h2>
+                <p>Help us continue our mission to connect people with nature through sound. Choose a support option that works for you.</p>
+
+                <div class="support-options">
+                    <div class="support-card">
+                        <h3>Forest Friend</h3>
+                        <p>Basic support with access to monthly tracks</p>
+                        <div class="support-price">$5<span>/month</span></div>
+                        <a href="#" class="support-btn">Select Plan</a>
+                    </div>
+
+                    <div class="support-card">
+                        <h3>Nature Guardian</h3>
+                        <p>Full access to all tracks + behind the scenes content</p>
+                        <div class="support-price">$12<span>/month</span></div>
+                        <a href="#" class="support-btn">Select Plan</a>
+                    </div>
+
+                    <div class="support-card">
+                        <h3>Forest Patron</h3>
+                        <p>All previous benefits + exclusive merchandise</p>
+                        <div class="support-price">$25<span>/month</span></div>
+                        <a href="#" class="support-btn">Select Plan</a>
+                    </div>
+                </div>
+
+                <div style="margin-top: 3rem; text-align: center;">
+                    <h3>One-Time Donation</h3>
+                    <p>Prefer to make a one-time contribution? Any amount helps us continue our work.</p>
+                    <a href="#" class="support-btn">Make a Donation</a>
+                </div>
+            </section>
+
+            <!-- Test Page -->
+            <section id="test" class="page">
+                <h2>Experience Test</h2>
+                <p>Help us improve by sharing your experience with our forest music. Your feedback is invaluable to us.</p>
+
+                <form class="test-form">
+                    <div class="form-group">
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" placeholder="Enter your name">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" placeholder="Enter your email">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="favorite-track">Favorite Track</label>
+                        <select id="favorite-track">
+                            <option value="">Select your favorite track</option>
+                            <option value="1">Whispering Pines</option>
+                            <option value="2">Morning Dew</option>
+                            <option value="3">River Flow</option>
+                            <option value="4">Autumn Leaves</option>
+                            <option value="5">Mountain Echo</option>
+                            <option value="6">Moonlit Forest</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="rating">Overall Rating</label>
+                        <select id="rating">
+                            <option value="">Rate your experience</option>
+                            <option value="5">Excellent - 5 stars</option>
+                            <option value="4">Very Good - 4 stars</option>
+                            <option value="3">Good - 3 stars</option>
+                            <option value="2">Fair - 2 stars</option>
+                            <option value="1">Poor - 1 star</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="feedback">Your Feedback</label>
+                        <textarea id="feedback" rows="5" placeholder="Tell us about your experience with Forest Harmony..."></textarea>
+                    </div>
+
+                    <div style="text-align: center;">
+                        <button type="submit" class="submit-btn">Submit Feedback</button>
+                    </div>
+                </form>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <i class="fas fa-tree"></i> Forest Harmony
+                </div>
+
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                    <a href="#"><i class="fab fa-spotify"></i></a>
+                </div>
+
+                <div class="copyright">
+                    &copy; 2023 Forest Harmony. All rights reserved. | Connecting nature and music.
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Navigation functionality
+        const navToggle = document.getElementById('navToggle');
+        const navMenu = document.getElementById('navMenu');
+        const navLinks = document.querySelectorAll('.nav-link');
+        const pages = document.querySelectorAll('.page');
+
+        // Toggle mobile menu
+        navToggle.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+            navToggle.innerHTML = navMenu.classList.contains('active')
+                ? '<i class="fas fa-times"></i>'
+                : '<i class="fas fa-bars"></i>';
+        });
+
+        // Switch between pages
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+
+                // Get the target page
+                const targetPage = link.getAttribute('data-page');
+
+                // Update active navigation link
+                navLinks.forEach(navLink => navLink.classList.remove('active'));
+                link.classList.add('active');
+
+                // Hide all pages
+                pages.forEach(page => page.classList.remove('active'));
+
+                // Show target page
+                document.getElementById(targetPage).classList.add('active');
+
+                // Close mobile menu if open
+                if (navMenu.classList.contains('active')) {
+                    navMenu.classList.remove('active');
+                    navToggle.innerHTML = '<i class="fas fa-bars"></i>';
+                }
+            });
+        });
+
+        // Music player functionality
+        const playButtons = document.querySelectorAll('.play-btn');
+        const progressBars = document.querySelectorAll('.progress');
+        const currentTimes = document.querySelectorAll('.current-time');
+
+        // Track states: 0 = stopped, 1 = playing
+        const trackStates = {
+            1: { playing: false, currentTime: 0, duration: 272 }, // 4:32
+            2: { playing: false, currentTime: 0, duration: 315 }, // 5:15
+            3: { playing: false, currentTime: 0, duration: 362 }, // 6:02
+            4: { playing: false, currentTime: 0, duration: 228 }, // 3:48
+            5: { playing: false, currentTime: 0, duration: 441 }, // 7:21
+            6: { playing: false, currentTime: 0, duration: 485 }  // 8:05
+        };
+
+        // Track intervals for updating progress
+        const trackIntervals = {};
+
+        // Format seconds to MM:SS
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        }
+
+        // Update progress bar and time display
+        function updateProgress(trackNum) {
+            const state = trackStates[trackNum];
+            const progress = (state.currentTime / state.duration) * 100;
+
+            // Update progress bar
+            document.querySelector(`.progress[data-track="${trackNum}"]`).style.width = `${progress}%`;
+
+            // Update time display
+            document.querySelector(`.current-time[data-track="${trackNum}"]`).textContent = formatTime(state.currentTime);
+
+            // Update button icon if playing
+            const buttonIcon = document.querySelector(`.play-btn[data-track="${trackNum}"] i`);
+            if (state.playing) {
+                buttonIcon.className = 'fas fa-pause';
+            } else {
+                buttonIcon.className = 'fas fa-play';
+            }
+        }
+
+        // Play/pause functionality
+        playButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const trackNum = parseInt(button.getAttribute('data-track'));
+                const state = trackStates[trackNum];
+
+                // If track is playing, pause it
+                if (state.playing) {
+                    state.playing = false;
+                    clearInterval(trackIntervals[trackNum]);
+                } else {
+                    // If track is finished, restart it
+                    if (state.currentTime >= state.duration) {
+                        state.currentTime = 0;
+                    }
+
+                    // Start playing
+                    state.playing = true;
+
+                    // Start interval to update progress
+                    trackIntervals[trackNum] = setInterval(() => {
+                        state.currentTime += 1;
+                        updateProgress(trackNum);
+
+                        // If track finished, stop it
+                        if (state.currentTime >= state.duration) {
+                            state.playing = false;
+                            state.currentTime = state.duration;
+                            clearInterval(trackIntervals[trackNum]);
+                            updateProgress(trackNum);
+                        }
+                    }, 1000);
+                }
+
+                updateProgress(trackNum);
+            });
+        });
+
+        // Form submission
+        const testForm = document.querySelector('.test-form');
+        testForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('Thank you for your feedback! Your response has been recorded.');
+            testForm.reset();
+        });
+
+        // Support buttons
+        const supportButtons = document.querySelectorAll('.support-btn');
+        supportButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                if (!button.getAttribute('data-page')) {
+                    e.preventDefault();
+                    alert('Thank you for your interest in supporting Forest Harmony! This is a demo page.');
+                }
+            });
+        });
+
+        // Initialize time displays
+        Object.keys(trackStates).forEach(trackNum => {
+            document.querySelector(`.duration[data-track="${trackNum}"]`).textContent =
+                formatTime(trackStates[trackNum].duration);
+            updateProgress(trackNum);
+        });
+    </script>
+</body>
+</html>
